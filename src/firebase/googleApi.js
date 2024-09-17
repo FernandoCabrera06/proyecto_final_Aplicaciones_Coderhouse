@@ -1,0 +1,1 @@
+export const mapStaticApi = "AIzaSyCAjTSyoQpAPwZ5PMuVL9F0Tm0275KV1Zg"
