@@ -1,18 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
-import Entypo from '@expo/vector-icons/Entypo';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { colors } from '../global/colors';
-import { useDeleteOrderMutation } from "../services/shop";
+import Counter from './Counter';
 
-const CartItem = ({ item }) => {
-  const [deleteOrder] = useDeleteOrderMutation();
+const CartItem = ({ item, onRemove, onIncrement, onDecrement }) => {
+  const [quantity, setQuantity] = useState(item.quantity || 1);
 
-  const handleDelete = async () => {
-    try {
-      await deleteOrder({ userId: item.userId, orderId: item.id }).unwrap();
-    } catch (error) {
-      console.error('Failed to delete the order:', error);
-    }
+  const handleQuantityChange = (newQuantity) => {
+    setQuantity(newQuantity);
   };
 
   return (
@@ -21,9 +17,14 @@ const CartItem = ({ item }) => {
         <Text style={styles.title}>{item.description}</Text>
         <Text style={styles.brand}>{item.brand}</Text>
         <Text style={styles.price}>{item.price} $</Text>
+        <Counter
+          onChange={handleQuantityChange}
+          onIncrement={() => onIncrement(item.id)}
+          onDecrement={() => onDecrement(item.id)}
+        />
       </View>
-      <TouchableOpacity onPress={handleDelete}>
-        <Entypo name="trash" size={48} color={colors.primary} />
+      <TouchableOpacity onPress={() => onRemove(item.id)}>
+        <Ionicons name="trash" size={48} color={colors.primary} />
       </TouchableOpacity>
     </View>
   );

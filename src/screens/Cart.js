@@ -3,7 +3,7 @@ import CartItem from "../components/CartItem";
 import { colors } from "../global/colors";
 import { useDispatch, useSelector } from "react-redux";
 import { usePostOrderMutation } from "../services/shop";
-import { clearCart } from "../features/cart/cartSlice";
+import { clearCart, removeItem, incrementItemQuantity, decrementItemQuantity } from "../features/cart/cartSlice";
 
 const Cart = ({ navigation }) => {
   const cart = useSelector((state) => state.cart);
@@ -21,12 +21,31 @@ const Cart = ({ navigation }) => {
     navigation.navigate("OrdersStack");
   };
 
+  const handleRemoveItem = (itemId) => {
+    dispatch(removeItem(itemId));
+  };
+
+  const handleIncrementItem = (itemId) => {
+    dispatch(incrementItemQuantity(itemId));
+  };
+
+  const handleDecrementItem = (itemId) => {
+    dispatch(decrementItemQuantity(itemId));
+  };
+
   return (
     <View style={styles.container}>
       <FlatList
         data={cart.items}
         keyExtractor={(item) => item.id}
-        renderItem={({ item }) => <CartItem item={item} />}
+        renderItem={({ item }) => (
+          <CartItem
+            item={item}
+            onRemove={() => handleRemoveItem(item.id)}
+            onIncrement={handleIncrementItem}
+            onDecrement={handleDecrementItem}
+          />
+        )}
       />
       <View style={styles.containerConfirm}>
         <Pressable onPress={handleAddOrder}>

@@ -1,20 +1,32 @@
-import { Pressable, StyleSheet, Text, View, TextInput } from "react-native"
-import React, { useState } from "react"
-import { colors } from "../global/colors"
+import { Pressable, StyleSheet, Text, View } from "react-native";
+import React, { useState } from "react";
+import { colors } from "../global/colors";
 
-const Counter = () => {
-  const [input, setInput] = useState(0)
+const Counter = ({ onChange, onIncrement, onDecrement }) => {
+  const [input, setInput] = useState(1);
 
   const handleInput = (t) => {
-    setInput(Number(t))
-  }
+    const value = Number(t);
+    setInput(value);
+    onChange(value);
+  };
 
   return (
     <View style={styles.container}>
       <View style={styles.containerCounter}>
         <Pressable
-          onPress={() => console.log("va a restar")}
-          style={styles.button}
+          onPress={() => {
+            if (input > 1) {
+              const newValue = input - 1;
+              setInput(newValue);
+              onChange(newValue);
+              onDecrement();
+            }
+          }}
+          style={[
+            styles.button,
+            input === 1 && styles.buttonDisabled
+          ]}
         >
           <Text style={styles.buttonText}>-</Text>
         </Pressable>
@@ -22,32 +34,22 @@ const Counter = () => {
           <Text style={styles.countText}>{input}</Text>
         </View>
         <Pressable
-          onPress={() => console.log("va a sumar")}
+          onPress={() => {
+            const newValue = input + 1;
+            setInput(newValue);
+            onChange(newValue);
+            onIncrement();
+          }}
           style={styles.button}
         >
           <Text style={styles.buttonText}>+</Text>
         </Pressable>
       </View>
-      <View style={styles.containerInput}>
-        <TextInput
-          style={styles.input}
-          value={String(input)}
-          onChangeText={handleInput}
-          placeholder="0"
-          placeholderTextColor={colors.textSecondary}
-        />
-        <Pressable
-          onPress={() => console.log("suma monto")}
-          style={styles.button}
-        >
-          <Text style={styles.buttonText}>Agregar</Text>
-        </Pressable>
-      </View>
     </View>
-  )
-}
+  );
+};
 
-export default Counter
+export default Counter;
 
 const styles = StyleSheet.create({
   container: {
@@ -65,6 +67,9 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 8,
     margin: 5,
+  },
+  buttonDisabled: {
+    backgroundColor: colors.primary + "80",
   },
   buttonText: {
     color: colors.background,
@@ -84,19 +89,4 @@ const styles = StyleSheet.create({
     fontFamily: "OpenSansBold",
     color: colors.textPrimary,
   },
-  containerInput: {
-    flexDirection: "row",
-    margin: 10,
-  },
-  input: {
-    width: 60,
-    textAlign: "center",
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 8,
-    padding: 10,
-    fontFamily: "OpenSansRegular",
-    color: colors.textPrimary,
-    backgroundColor: colors.background,
-  },
-})
+});

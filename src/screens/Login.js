@@ -1,48 +1,62 @@
-import { useEffect, useState } from "react"
-import { StyleSheet, Text, View, Pressable } from "react-native"
-import { colors } from "../global/colors"
-import InputForm from "../components/InputForm"
-import SubmitButton from "../components/SubmitButton"
-import { useLoginMutation } from "../services/auth"
-import { setUser } from "../features/auth/authSlice"
-import { useDispatch } from "react-redux"
-import { loginSchema } from "../validations/loginSchema"
+import { useEffect, useState } from "react";
+import { StyleSheet, Text, View, Pressable } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { colors } from "../global/colors";
+import InputForm from "../components/InputForm";
+import SubmitButton from "../components/SubmitButton";
+import { useLoginMutation } from "../services/auth";
+import { setUser } from "../features/auth/authSlice";
+import { useDispatch } from "react-redux";
+import { loginSchema } from "../validations/loginSchema";
 
 const Login = ({ navigation }) => {
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [errorEmail, setErrorEmail] = useState("")
-  const [errorPassword, setErrorPassword] = useState("")
-  const [triggerLogin, { data, isSuccess }] = useLoginMutation()
-  const dispatch = useDispatch()
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [errorEmail, setErrorEmail] = useState("");
+  const [errorPassword, setErrorPassword] = useState("");
+  const [triggerLogin, { data, isSuccess }] = useLoginMutation();
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    const loadSession = async () => {
+      const session = await AsyncStorage.getItem("userSession");
+      if (session) {
+        const userData = JSON.parse(session);
+        dispatch(setUser(userData));
+        navigation.navigate("Home"); // Navega a la pantalla principal si hay sesión
+      }
+    };
+    loadSession();
+  }, []);
 
   const onSubmit = async () => {
     try {
-      loginSchema.validateSync({ email, password })
-      const { data } = await triggerLogin({ email, password })
-      dispatch(
-        setUser({
-          email: data.email,
-          idToken: data.idToken,
-          localId: data.localId,
-        })
-      )
+      loginSchema.validateSync({ email, password });
+      const { data } = await triggerLogin({ email, password });
+      const userData = {
+        email: data.email,
+        idToken: data.idToken,
+        localId: data.localId,
+      };
+      dispatch(setUser(userData));
+      await AsyncStorage.setItem("userSession", JSON.stringify(userData));
+      navigation.navigate("Home"); // Navega a la pantalla principal después del login
     } catch (error) {
-      console.log(error.path)
+      console.log(error.path);
       switch (error.path) {
         case "email":
-          setErrorEmail(error.message)
-          setErrorPassword("")
-          break
+          setErrorEmail(error.message);
+          setErrorPassword("");
+          break;
         case "password":
-          setErrorPassword(error.message)
-          setErrorEmail("")
-          break
+          setErrorPassword(error.message);
+          setErrorEmail("");
+          break;
         default:
-          break
+          break;
       }
     }
-  }
+  };
 
   return (
     <View style={styles.main}>
@@ -71,10 +85,10 @@ const Login = ({ navigation }) => {
         </Pressable>
       </View>
     </View>
-  )
-}
+  );
+};
 
-export default Login
+export default Login;
 
 const styles = StyleSheet.create({
   main: {
@@ -119,4 +133,4 @@ const styles = StyleSheet.create({
   linkButton: {
     marginTop: 10,
   },
-})
+});

@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View } from "react-native";
-import AntDesign from "@expo/vector-icons/AntDesign";
+import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import { colors } from "../global/colors";
 
 const OrderItem = ({ item }) => {
@@ -9,7 +9,7 @@ const OrderItem = ({ item }) => {
         <Text style={styles.date}>{item.createdAt}</Text>
         <Text style={styles.total}>Total: {item.total} $</Text>
       </View>
-      <AntDesign name="search1" size={48} color={colors.primary} />
+      <FontAwesome5 style={styles.icon} name="list-alt" size={35} color={colors.primary} />
     </View>
   );
 };
@@ -55,4 +55,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     overflow: "hidden",
   },
+  icon:{
+    marginLeft: 15
+  }
 });

@@ -38,12 +38,6 @@ export const shopApi = createApi({
                 method: "PATCH",
                 body: { image }
             })
-        }),
-        deleteOrder: builder.mutation({
-            query: ({ userId, orderId }) => ({
-                url: `/orders/${userId}/${orderId}.json`,
-                method: "DELETE"
-            })
         })
     })
 })
@@ -54,6 +48,5 @@ export const {
     useGetProductQuery,
     usePostOrderMutation,
     useGetOrdersByUserQuery,
-    usePatchImageProfileMutation,
-    useDeleteOrderMutation
+    usePatchImageProfileMutation
 } = shopApi
